@@ -19,4 +19,10 @@ This creates a connection to localhost. Open up a web browser and type
 ```
 Localhost:3000/index.html
 ```
+```
+Localhost:3000/test.gif
+```
+```
+Localhost:3000/pic.jpg
+```
 You should see the file rendered onto the browser!
