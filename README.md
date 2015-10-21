@@ -1,7 +1,7 @@
 # CS118Lab1
 CS118 Fall '15 Lab 1: Concurrent Web Server using BSD Sockets
 
-Brendan Sio 804150223
+Brendan Sio 804150223  
 Roland Zeng 204150508
 
 Using given skeleton code, we created a web server that successfully outputs .html, .gif, and .jpg files on localhost. All our changes are done in the "dostuff" function in serverFork.c
