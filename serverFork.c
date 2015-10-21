@@ -9,8 +9,8 @@
 #include <netinet/in.h>  // constants and structures needed for internet domain addresses, e.g. sockaddr_in
 #include <stdlib.h>
 #include <strings.h>
-#include <sys/wait.h>	/* for the waitpid() system call */
-#include <signal.h>	/* signal name macros, and the kill() prototype */
+#include <sys/wait.h>    /* for the waitpid() system call */
+#include <signal.h>    /* signal name macros, and the kill() prototype */
 
 
 void sigchld_handler(int s)
@@ -108,25 +108,33 @@ bzero(filename,256);
 char* begin = strstr(buffer, "GET /");
 //puts(begin);
 if (begin == buffer) {
-	// We found GET /, hence start from the index=5 (the "i" in index) which is begin+5
+    // We found GET /, hence start from the index=5 (the "i" in index) which is begin+5
 
-	// Now find where the rest of the string (starting from HTTP/1.1) occurs
-	char* end = strstr(buffer+5, " HTTP/1.1");
-	// Subtract that index location from the beginning of the file name to give us the actual name of the file
-	int filelength = end - (begin+5);
-	//printf("%d\n",filelength);
-	strncpy(filename, begin+5, filelength);
-	//puts(filename);
-	
-	// Now we have the name of our file which we will open using fopen and fread
+    // Now find where the rest of the string (starting from HTTP/1.1) occurs
+    char* end = strstr(buffer+5, " HTTP/1.1");
+    // Subtract that index location from the beginning of the file name to give us the actual name of the file
+    int filelength = end - (begin+5);
+    //printf("%d\n",filelength);
+    strncpy(filename, begin+5, filelength);
+    //puts(filename);
+    
+    // Now we have the name of our file which we will open using fopen and fread
 }
 else {
-	puts("error could not find");
+    puts("unexpected error [this error should never happen]");
+    write(sock,"500 Internal Server Error\n", 25);
+    return;
 }
 
 
 // Open the file using the filename we parsed earlier
 FILE* myFile = fopen(filename, "r");
+
+if (myFile == NULL) {
+    puts("couldn't find file");
+    write(sock,"404 Not Found\n", 17);
+    return;
+}
 
 // Get size of file (http://stackoverflow.com/questions/238603/how-can-i-get-a-files-size-in-c)
 fseek(myFile, 0L, SEEK_END);
@@ -136,20 +144,20 @@ fseek(myFile, 0L, SEEK_SET);
 // Read the file's contents and put into myBuf 
 char myBuf[sz+1];
 fread(myBuf,1,sz,myFile);
-
 write(sock,myBuf,sz);
 
-puts("\n\n***BEGINNING OF MESSAGE***\n\n");
+puts("\n\n***BEGINNING OF MESSAGE***\n");
 
 printf("Name of file : %s\n",filename);
 printf("Size of file : %d\n",sz);
 printf("Contents of file: %s\n",myBuf);
+printf("\nHere is the response: \n%s\n",buffer);
 
-puts("\n\n***END OF MESSAGE***\n\n");
+puts("\n***END OF MESSAGE***\n\n");
 
 //***********************
    if (n < 0) error("ERROR reading from socket");
-   printf("Here is the message: %s\n",buffer);
+   
    //n = write(sock,"I got your message",18);
    if (n < 0) error("ERROR writing to socket");
 }
